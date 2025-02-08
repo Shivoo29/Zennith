@@ -1,174 +1,132 @@
 "use client"
 
-import { useState } from "react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Modal } from "@/components/ui/modal"
 import { motion } from "framer-motion"
+import Image from "next/image"
 
-const sponsorTiers = [
+interface Sponsor {
+  name: string
+  logo: string
+  description: string
+  tier: "platinum" | "gold" | "silver"
+  website?: string
+}
+
+const sponsors: Sponsor[] = [
   {
-    title: "Title Sponsors",
-    sponsors: [
-      {
-        id: 1,
-        name: "TechCorp",
-        logo: "/placeholder.svg",
-        description: "Leading technology solutions provider",
-        website: "https://example.com",
-      },
-      {
-        id: 2,
-        name: "InnovateX",
-        logo: "/placeholder.svg",
-        description: "Innovation and research company",
-        website: "https://example.com",
-      },
-    ],
+    name: "TechCorp",
+    logo: "/sponsors/techcorp.png",
+    description: "Leading technology solutions provider",
+    tier: "platinum",
+    website: "https://techcorp.com"
   },
   {
-    title: "Gold Sponsors",
-    sponsors: [
-      {
-        id: 3,
-        name: "FutureLabs",
-        logo: "/placeholder.svg",
-        description: "AI and machine learning solutions",
-        website: "https://example.com",
-      },
-      {
-        id: 4,
-        name: "SpaceX",
-        logo: "/placeholder.svg",
-        description: "Space exploration technologies",
-        website: "https://example.com",
-      },
-    ],
+    name: "InnovateX",
+    logo: "/sponsors/innovatex.png",
+    description: "Innovation and research leader",
+    tier: "platinum",
+    website: "https://innovatex.com"
   },
-  {
-    title: "Silver Sponsors",
-    sponsors: [
-      {
-        id: 5,
-        name: "StartupHub",
-        logo: "/placeholder.svg",
-        description: "Startup incubator and accelerator",
-        website: "https://example.com",
-      },
-      {
-        id: 6,
-        name: "VentureCapital",
-        logo: "/placeholder.svg",
-        description: "Investment and venture capital firm",
-        website: "https://example.com",
-      },
-    ],
-  },
+  // Add more sponsors here
 ]
 
-export default function Sponsors() {
-  const [selectedSponsor, setSelectedSponsor] = useState<(typeof sponsorTiers)[0]["sponsors"][0] | null>(null)
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
+}
 
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1
+  }
+}
+
+export default function SponsorsPage() {
   return (
-    <div className="min-h-screen pt-20 bg-black/50 backdrop-blur-sm">
-      <div className="container mx-auto px-4 py-12">
-        <motion.h1
-          className="font-press-start text-4xl text-center mb-12 bg-gradient-to-r from-zenith-red to-zenith-blue bg-clip-text text-transparent"
-          initial={{ opacity: 0, y: 20 }}
+    <div className="min-h-screen bg-gradient-to-b from-black via-purple-900/20 to-black">
+      <div className="max-w-7xl mx-auto px-4 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
         >
-          Our Sponsors
-        </motion.h1>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
+            Our Sponsors
+          </h1>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            Meet the innovative companies powering Zenith E-Summit 2025
+          </p>
+        </motion.div>
 
-        <div className="space-y-16">
-          {sponsorTiers.map((tier, index) => (
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {sponsors.map((sponsor, index) => (
             <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.2 }}
+              key={sponsor.name}
+              variants={itemVariants}
+              whileHover={{ scale: 1.05 }}
+              className={`
+                relative group overflow-hidden rounded-xl
+                ${sponsor.tier === 'platinum' ? 'md:col-span-2 lg:col-span-1' : ''}
+                bg-gradient-to-br from-purple-900/30 via-black to-purple-900/30
+                border border-purple-500/20 backdrop-blur-sm
+              `}
             >
-              <div className="relative">
-                <h2 className="font-press-start text-2xl text-center mb-8 text-zenith-purple">{tier.title}</h2>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-zenith-purple/20 to-transparent h-px -bottom-2" />
+              <div className="p-8">
+                <div className="aspect-square relative mb-6 group-hover:scale-105 transition-transform">
+                  <Image
+                    src={sponsor.logo}
+                    alt={sponsor.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-2xl font-bold text-white">{sponsor.name}</h3>
+                    <span className={`
+                      px-3 py-1 rounded-full text-sm font-medium
+                      ${sponsor.tier === 'platinum' ? 'bg-purple-500/20 text-purple-300' :
+                        sponsor.tier === 'gold' ? 'bg-yellow-500/20 text-yellow-300' :
+                        'bg-gray-500/20 text-gray-300'}
+                    `}>
+                      {sponsor.tier}
+                    </span>
+                  </div>
+                  <p className="text-gray-400">{sponsor.description}</p>
+                  {sponsor.website && (
+                    <a
+                      href={sponsor.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-purple-400 hover:text-purple-300"
+                    >
+                      Visit Website
+                      <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </a>
+                  )}
+                </div>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {tier.sponsors.map((sponsor, sponsorIndex) => (
-                  <motion.button
-                    key={sponsor.id}
-                    onClick={() => setSelectedSponsor(sponsor)}
-                    className="group relative p-6 rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-300"
-                    whileHover={{ scale: 1.05 }}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3, delay: index * 0.2 + sponsorIndex * 0.1 }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-zenith-red/0 via-zenith-purple/10 to-zenith-blue/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
-
-                    <div className="relative h-32 mb-4 group-hover:scale-110 transition-transform duration-300">
-                      <Image
-                        src={sponsor.logo || "/placeholder.svg"}
-                        alt={sponsor.name}
-                        fill
-                        className="object-contain filter group-hover:brightness-125 transition-all duration-300"
-                      />
-                    </div>
-
-                    <div className="relative">
-                      <h3 className="font-press-start text-xl mb-2 text-zenith-red group-hover:text-zenith-purple transition-colors">
-                        {sponsor.name}
-                      </h3>
-                      <p className="text-gray-400 group-hover:text-gray-300 transition-colors">{sponsor.description}</p>
-
-                      <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zenith-red to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
-                    </div>
-                  </motion.button>
-                ))}
-              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             </motion.div>
           ))}
-        </div>
-
-        <Modal isOpen={!!selectedSponsor} onClose={() => setSelectedSponsor(null)} title={selectedSponsor?.name || ""}>
-          <motion.div className="space-y-4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="relative h-48 overflow-hidden rounded-lg">
-              <Image
-                src={selectedSponsor?.logo || "/placeholder.svg"}
-                alt={selectedSponsor?.name || ""}
-                fill
-                className="object-contain"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20" />
-            </div>
-
-            <p className="text-gray-300 leading-relaxed">{selectedSponsor?.description}</p>
-
-            <motion.div
-              className="flex justify-between items-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Button
-                className="bg-zenith-red hover:bg-zenith-red/80 transform hover:scale-105 transition-transform"
-                onClick={() => window.open(selectedSponsor?.website, "_blank")}
-              >
-                Visit Website
-              </Button>
-              <Button
-                variant="outline"
-                className="border-zenith-blue text-zenith-blue hover:bg-zenith-blue/10 transform hover:scale-105 transition-transform"
-                onClick={() => setSelectedSponsor(null)}
-              >
-                Close
-              </Button>
-            </motion.div>
-          </motion.div>
-        </Modal>
+        </motion.div>
       </div>
     </div>
   )
 }
+
+
 
