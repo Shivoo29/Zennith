@@ -15,7 +15,7 @@ export default function AdminLogin() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get("callbackUrl") || "/admin/dashboard"
+  const callbackUrl = searchParams?.get("callbackUrl") || "/admin/dashboard"
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
