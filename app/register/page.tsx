@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { ParticleBackground } from "@/components/particle-background"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -83,7 +84,9 @@ export default function Register() {
   ]
 
   return (
-    <div className="min-h-screen pt-20 bg-black/50 backdrop-blur-sm">
+    <>
+      <ParticleBackground />
+      <div className="min-h-screen pt-20">
       <div className="container mx-auto px-4 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -205,8 +208,9 @@ export default function Register() {
             )}
           </motion.div>
         </motion.div>
-      </div>
-    </div>
-  )
-}
+        </div>
+        </div>
+      </>
+      )
+    }
 
