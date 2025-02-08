@@ -10,105 +10,92 @@ export function ThreeBackground() {
   useEffect(() => {
     if (!containerRef.current) return
 
-    // Scene setup
+    // Scene setup with enhanced fog
     const scene = new THREE.Scene()
+    scene.fog = new THREE.FogExp2(0x0a0a1f, 0.02)
+
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
+    const renderer = new THREE.WebGLRenderer({ 
+      alpha: true, 
+      antialias: true,
+      powerPreference: "high-performance"
+    })
 
     renderer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setPixelRatio(window.devicePixelRatio)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setClearColor(0x0a0a1f, 1)
     containerRef.current.appendChild(renderer.domElement)
 
-    // Camera position
-    camera.position.z = 15
-    camera.position.y = 5
-    camera.position.x = 5
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
+    // Enhanced lighting setup
+    const ambientLight = new THREE.AmbientLight(0x00fff9, 0.1)
     scene.add(ambientLight)
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1)
-    directionalLight.position.set(5, 5, 5)
-    scene.add(directionalLight)
+    const mainSpotlight = new THREE.SpotLight(0xff2e88, 1)
+    mainSpotlight.position.set(-10, 10, 10)
+    mainSpotlight.angle = 0.4
+    mainSpotlight.penumbra = 0.3
+    mainSpotlight.decay = 1
+    scene.add(mainSpotlight)
 
-    // Stars
-    const starGeometry = new THREE.BufferGeometry()
-    const starMaterial = new THREE.PointsMaterial({
-      color: 0xffffff,
-      size: 0.1,
+    const secondaryLight = new THREE.PointLight(0xbd00ff, 0.8)
+    secondaryLight.position.set(10, -10, -10)
+    scene.add(secondaryLight)
+
+    // Create hexagonal grid
+    const gridHelper = new THREE.GridHelper(100, 50, 0x00fff9, 0x00fff9)
+    gridHelper.position.y = -5
+    gridHelper.material.opacity = 0.1
+    gridHelper.material.transparent = true
+    scene.add(gridHelper)
+
+    // Create floating particles
+    const particleGeometry = new THREE.BufferGeometry()
+    const particleCount = 2000
+    const posArray = new Float32Array(particleCount * 3)
+    
+    for(let i = 0; i < particleCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 50
+    }
+    
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3))
+    const particleMaterial = new THREE.PointsMaterial({
+      size: 0.02,
+      color: 0xff2e88,
+      transparent: true,
+      blending: THREE.AdditiveBlending
+    })
+    
+    const particles = new THREE.Points(particleGeometry, particleMaterial)
+    scene.add(particles)
+
+    // Add floating cyber rings
+    const rings: THREE.Mesh[] = []
+    const ringGeometry = new THREE.TorusGeometry(5, 0.1, 16, 100)
+    const ringMaterial = new THREE.MeshPhongMaterial({
+      color: 0x00fff9,
+      emissive: 0x00fff9,
+      emissiveIntensity: 0.5,
+      shininess: 100,
+      transparent: true,
+      opacity: 0.6
     })
 
-    const starsVertices = []
-    for (let i = 0; i < 10000; i++) {
-      const x = (Math.random() - 0.5) * 2000
-      const y = (Math.random() - 0.5) * 2000
-      const z = -Math.random() * 2000
-      starsVertices.push(x, y, z)
+    for(let i = 0; i < 3; i++) {
+      const ring = new THREE.Mesh(ringGeometry, ringMaterial)
+      ring.position.set(
+        (Math.random() - 0.5) * 20,
+        (Math.random() - 0.5) * 20,
+        (Math.random() - 0.5) * 20
+      )
+      ring.rotation.x = Math.random() * Math.PI
+      ring.rotation.y = Math.random() * Math.PI
+      rings.push(ring)
+      scene.add(ring)
     }
 
-    starGeometry.setAttribute("position", new THREE.Float32BufferAttribute(starsVertices, 3))
-    const stars = new THREE.Points(starGeometry, starMaterial)
-    scene.add(stars)
+    camera.position.set(0, 2, 20)
 
-    // Create stylized spaceships using basic geometries
-    const createStylizedSpaceship = () => {
-      const group = new THREE.Group()
-
-      // Main body
-      const bodyGeometry = new THREE.ConeGeometry(1, 4, 8)
-      const bodyMaterial = new THREE.MeshPhongMaterial({
-        color: 0x3366ff,
-        shininess: 100,
-        specular: 0x666666,
-      })
-      const body = new THREE.Mesh(bodyGeometry, bodyMaterial)
-      body.rotation.x = Math.PI / 2
-      group.add(body)
-
-      // Wings
-      const wingGeometry = new THREE.BoxGeometry(4, 0.1, 1)
-      const wingMaterial = new THREE.MeshPhongMaterial({
-        color: 0xff3366,
-        shininess: 100,
-        specular: 0x666666,
-      })
-      const wings = new THREE.Mesh(wingGeometry, wingMaterial)
-      wings.position.z = -1
-      group.add(wings)
-
-      // Cockpit
-      const cockpitGeometry = new THREE.SphereGeometry(0.5, 16, 16)
-      const cockpitMaterial = new THREE.MeshPhongMaterial({
-        color: 0x6633ff,
-        shininess: 100,
-        specular: 0xffffff,
-      })
-      const cockpit = new THREE.Mesh(cockpitGeometry, cockpitMaterial)
-      cockpit.position.z = 1
-      group.add(cockpit)
-
-      return group
-    }
-
-    // Add multiple spaceships
-    const spaceships: (THREE.Mesh | THREE.Group)[] = []
-    const shipPositions = [
-      { x: -10, y: 0, z: -5, rotation: 0.2 },
-      { x: 10, y: 2, z: -8, rotation: -0.3 },
-      { x: 0, y: -3, z: -12, rotation: 0.1 },
-    ]
-
-    shipPositions.forEach((position) => {
-      const spaceship = createStylizedSpaceship()
-      spaceship.scale.set(0.5, 0.5, 0.5)
-      spaceship.position.set(position.x, position.y, position.z)
-      spaceship.rotation.y = position.rotation
-      scene.add(spaceship)
-      spaceships.push(spaceship)
-    })
-
-    // Controls
+    // Enhanced controls
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
     controls.dampingFactor = 0.05
@@ -122,14 +109,22 @@ export function ThreeBackground() {
       requestAnimationFrame(animate)
       frame += 0.001
 
-      // Animate stars
-      stars.rotation.y += 0.0002
+      // Animate particles
+      particles.rotation.y += 0.0005
+      particles.rotation.x += 0.0002
 
-      // Animate spaceships
-      spaceships.forEach((ship, index) => {
-        ship.position.y += Math.sin(frame + index) * 0.01
-        ship.rotation.y += 0.001
+      // Animate rings
+      rings.forEach((ring, i) => {
+        ring.rotation.x += 0.002 * (i + 1)
+        ring.rotation.y += 0.003 * (i + 1)
+        ring.position.y += Math.sin(frame + i) * 0.01
       })
+
+      // Animate lights
+      mainSpotlight.position.x = Math.sin(frame) * 15
+      mainSpotlight.position.z = Math.cos(frame) * 15
+      secondaryLight.position.x = Math.cos(frame) * 10
+      secondaryLight.position.z = Math.sin(frame) * 10
 
       controls.update()
       renderer.render(scene, camera)
@@ -137,7 +132,6 @@ export function ThreeBackground() {
 
     animate()
 
-    // Handle resize
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight
       camera.updateProjectionMatrix()
@@ -149,9 +143,11 @@ export function ThreeBackground() {
     return () => {
       window.removeEventListener("resize", handleResize)
       containerRef.current?.removeChild(renderer.domElement)
+      renderer.dispose()
     }
   }, [])
 
   return <div ref={containerRef} className="fixed inset-0 pointer-events-none" />
 }
+
 
