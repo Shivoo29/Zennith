@@ -15,7 +15,7 @@ const events = [
     date: "Feb 10, 2025",
     time: "10:00 AM - 1:00 PM",
     venue: "Main Auditorium",
-    modelType: "spaceship",
+    modelType: "Bull" as const,
     details:
       "Get ready to pitch your startup idea to a panel of experienced investors and industry experts. Winners will receive mentorship and potential funding opportunities.",
     prize: "₹1,00,000",
@@ -27,7 +27,7 @@ const events = [
     date: "Feb 10-11, 2025",
     time: "2:00 PM - 2:00 PM",
     venue: "Innovation Lab",
-    modelType: "robot",
+    modelType: "hiest" as const,
     details:
       "Build innovative solutions for real-world problems in this 24-hour coding marathon. Work in teams and showcase your technical skills.",
     prize: "₹75,000",
@@ -39,7 +39,7 @@ const events = [
     date: "Feb 11, 2025",
     time: "9:00 AM - 12:00 PM",
     venue: "Conference Hall",
-    modelType: "satellite",
+    modelType: "craft" as const,
     details:
       "Analyze and present solutions for real business cases. Learn from industry experts and develop your strategic thinking.",
     prize: "₹50,000",
@@ -51,7 +51,7 @@ const events = [
     date: "Feb 11, 2025",
     time: "9:00 AM - 12:00 PM",
     venue: "Conference Hall",
-    modelType: "satellite",
+    modelType: "matrix" as const,
     details:
       "Analyze and present solutions for real business cases. Learn from industry experts and develop your strategic thinking.",
     prize: "₹50,000",
@@ -63,7 +63,7 @@ const events = [
     date: "Feb 11, 2025",
     time: "9:00 AM - 12:00 PM",
     venue: "Conference Hall",
-    modelType: "satellite",
+    modelType: "drone" as const,
     details:
       "Analyze and present solutions for real business cases. Learn from industry experts and develop your strategic thinking.",
     prize: "₹50,000",
@@ -75,7 +75,7 @@ const events = [
     date: "Feb 10, 2025",
     time: "10:00 AM - 1:00 PM",
     venue: "Main Auditorium",
-    modelType: "spaceship",
+    modelType: "evolution" as const,
     details:
       "Get ready to pitch your startup idea to a panel of experienced investors and industry experts. Winners will receive mentorship and potential funding opportunities.",
     prize: "₹1,00,000",
@@ -83,7 +83,7 @@ const events = [
 ]
 
 export default function Events() {
-  const [selectedEvent, setSelectedEvent] = useState<(typeof events)[0] | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<typeof events[0] | null>(null)
 
   return (
     <div className="min-h-screen pt-20 bg-black/50 backdrop-blur-sm">
@@ -108,7 +108,7 @@ export default function Events() {
             >
               <div className="aspect-video relative">
                 <ThreeModel
-                  modelType={event.modelType as "spaceship" | "robot" | "satellite"}
+                  modelType={event.modelType}
                   className="absolute inset-0"
                   scale={0.8}
                   autoRotate={true}
@@ -140,7 +140,7 @@ export default function Events() {
           <div className="space-y-4">
             <div className="aspect-video relative rounded-lg overflow-hidden">
               <ThreeModel
-                modelType={selectedEvent?.modelType as "spaceship" | "robot" | "satellite"}
+                modelType={selectedEvent?.modelType}
                 className="absolute inset-0"
                 scale={1}
                 autoRotate={true}
