@@ -28,16 +28,21 @@ interface EventStats {
 }
 
 export default function AdminDashboard() {
-  const { data: session, status } = useSession()
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/admin/login')
+    },
+  })
   const [registrations, setRegistrations] = useState<Registration[]>([])
   const [eventStats, setEventStats] = useState<EventStats[]>([])
 
-  if (status === 'loading') {
-    return <div>Loading...</div>
-  }
-
-  if (status === 'unauthenticated' || !session) {
-    redirect('/auth/signin')
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-zenith-purple"></div>
+      </div>
+    )
   }
 
   // Simulated data - In a real app, this would fetch from your API
