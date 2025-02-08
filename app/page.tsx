@@ -118,13 +118,7 @@ export default function Home() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, delay: 1 }}
           >
-            <Image
-              src="/placeholder.svg"
-              alt="Floating Spaceship"
-              width={100}
-              height={100}
-              className="absolute top-1/4 left-1/4 animate-float"
-            />
+          
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 100 }}
@@ -132,7 +126,7 @@ export default function Home() {
             transition={{ duration: 1, delay: 1.2 }}
           >
             <Image
-              src="/placeholder.svg"
+              src="/nobgsuperman.svg"
               alt="Floating Astronaut"
               width={80}
               height={80}

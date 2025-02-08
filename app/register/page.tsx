@@ -24,14 +24,31 @@ export default function Register() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      const response = await fetch('/api/db', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
 
-    setIsSubmitting(false)
-    setIsSuccess(true)
+      const data = await response.json()
 
-    // Reset success message after 3 seconds
-    setTimeout(() => setIsSuccess(false), 3000)
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed')
+      }
+
+      setIsSuccess(true)
+    } catch (error) {
+      console.error('Registration error details:', error)
+      alert('Registration failed. Please try again.')
+      // You might want to add error state handling here
+    } finally {
+      setIsSubmitting(false)
+      // Reset success message after 3 seconds
+      setTimeout(() => setIsSuccess(false), 3000)
+    }
   }
 
   const formFields = [
