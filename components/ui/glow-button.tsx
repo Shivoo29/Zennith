@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { motion, HTMLMotionProps } from "framer-motion"
 import { ButtonProps } from "@/components/ui/button"
 
-interface GlowButtonProps extends Omit<HTMLMotionProps<"button">, keyof ButtonProps> {
+type GlowButtonProps = HTMLMotionProps<"button"> & {
   glowColor?: string
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
   className?: string
