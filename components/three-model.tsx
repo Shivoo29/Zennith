@@ -3,249 +3,247 @@
 import { useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { AnimationMixer } from "three"
 
 interface ThreeModelProps {
-  modelType?: "spaceship" | "robot" | "satellite" | "futuristicCity" | "drone"
+  modelType?: "Bull" | "hiest" | "craft" | "matrix" | "drone" | "evolution"
   scale?: number
   rotation?: number
   position?: { x: number; y: number; z: number }
   autoRotate?: boolean
   className?: string
-  color?: string
   enableEffects?: boolean
 }
 
 export function ThreeModel({
-  modelType = "spaceship",
+  modelType = "Bull",
   scale = 1,
   rotation = 0,
   position = { x: 0, y: 0, z: 0 },
   autoRotate = true,
   className = "",
-  color = "#3366ff",
   enableEffects = true,
 }: ThreeModelProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isHovered, setIsHovered] = useState(false)
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
+  const sceneRef = useRef<THREE.Scene | null>(null)
+  const modelRef = useRef<THREE.Group | null>(null)
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [mixer, setMixer] = useState<AnimationMixer | null>(null)
+  const initialZoomRef = useRef<boolean>(true)
+  const targetCameraPositionRef = useRef<THREE.Vector3>(new THREE.Vector3())
+
+  const modelPaths = {
+    Bull: 'diamond_hands.glb',
+    hiest: 'vansmoney.glb',
+    craft: 'the_haunted_altar.glb',
+    matrix: 'low_poly_mccree.glb',
+    drone: 'dji_fpv_by_sdc_-__high_performance_drone.glb',
+    evolution: 'stylized_mushrooms.glb'
+  }
 
   useEffect(() => {
     if (!containerRef.current) return
+    setIsLoading(true)
+    setError(null)
 
+    console.log('Initializing Three.js scene')
+    
     const container = containerRef.current
     const scene = new THREE.Scene()
+    sceneRef.current = scene
     
-    // Add fog for depth
-    scene.fog = new THREE.FogExp2(0x000000, 0.05)
+    // Setup camera
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      container.clientWidth / container.clientHeight,
+      0.1,
+      1000
+    )
+    camera.position.set(0, 1, 5)
+    cameraRef.current = camera
 
-    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000)
-    const renderer = new THREE.WebGLRenderer({ 
-      alpha: true, 
+    // Setup renderer
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
       antialias: true,
-      powerPreference: "high-performance"
     })
-
-    renderer.setPixelRatio(window.devicePixelRatio)
     renderer.setSize(container.clientWidth, container.clientHeight)
-    renderer.shadowMap.enabled = true
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap
     container.appendChild(renderer.domElement)
+    rendererRef.current = renderer
 
-    // Enhanced Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4)
+    // Basic lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1)
     scene.add(ambientLight)
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1)
     directionalLight.position.set(5, 5, 5)
-    directionalLight.castShadow = true
     scene.add(directionalLight)
 
-    // Add point lights for dramatic effect
-    const pointLight1 = new THREE.PointLight(0xff0000, 1, 100)
-    pointLight1.position.set(10, 10, 10)
-    scene.add(pointLight1)
-
-    const pointLight2 = new THREE.PointLight(0x0000ff, 1, 100)
-    pointLight2.position.set(-10, -10, -10)
-    scene.add(pointLight2)
-
-    camera.position.z = 5
-
-    // Create particle system for background
-    const createParticles = () => {
-      const particleGeometry = new THREE.BufferGeometry()
-      const particleCount = 1000
-      const positions = new Float32Array(particleCount * 3)
-      const colors = new Float32Array(particleCount * 3)
-
-      for (let i = 0; i < particleCount * 3; i += 3) {
-        positions[i] = (Math.random() - 0.5) * 100
-        positions[i + 1] = (Math.random() - 0.5) * 100
-        positions[i + 2] = (Math.random() - 0.5) * 100
-
-        colors[i] = Math.random()
-        colors[i + 1] = Math.random()
-        colors[i + 2] = Math.random()
-      }
-
-      particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-      particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
-
-      const particleMaterial = new THREE.PointsMaterial({
-        size: 0.1,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.8
-      })
-
-      return new THREE.Points(particleGeometry, particleMaterial)
-    }
-
-    if (enableEffects) {
-      const particles = createParticles()
-      scene.add(particles)
-    }
-
-    // Enhanced model creation with more detail and effects
-    const createModel = (type: string) => {
-      const material = new THREE.MeshPhysicalMaterial({
-        color: new THREE.Color(color),
-        metalness: 0.9,
-        roughness: 0.1,
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.1,
-        reflectivity: 1.0,
-      })
-
-      switch (type) {
-        case "spaceship": {
-          const group = new THREE.Group()
-
-          // Enhanced main body with more geometric detail
-          const bodyGeometry = new THREE.ConeGeometry(1, 4, 16, 8)
-          const body = new THREE.Mesh(bodyGeometry, material)
-          body.rotation.x = Math.PI / 2
-          body.castShadow = true
-          group.add(body)
-
-          // More detailed wings
-          const wingShape = new THREE.Shape()
-          wingShape.moveTo(0, 0)
-          wingShape.lineTo(2, 0)
-          wingShape.lineTo(1.5, 1)
-          wingShape.lineTo(0, 0.8)
-          
-          const wingGeometry = new THREE.ExtrudeGeometry(wingShape, {
-            depth: 0.1,
-            bevelEnabled: true,
-            bevelThickness: 0.05,
-            bevelSize: 0.05,
-            bevelSegments: 3
-          })
-
-          const wings = new THREE.Mesh(wingGeometry, material)
-          wings.position.set(-2, -1, -0.5)
-          wings.castShadow = true
-          group.add(wings)
-
-          const wingsRight = wings.clone()
-          wingsRight.rotation.y = Math.PI
-          wingsRight.position.set(2, -1, -0.5)
-          group.add(wingsRight)
-
-          // Enhanced cockpit
-          const cockpitGeometry = new THREE.SphereGeometry(0.5, 32, 32)
-          const cockpitMaterial = new THREE.MeshPhysicalMaterial({
-            color: 0x6633ff,
-            metalness: 1.0,
-            roughness: 0,
-            transmission: 0.9,
-            thickness: 0.5,
-          })
-          const cockpit = new THREE.Mesh(cockpitGeometry, cockpitMaterial)
-          cockpit.position.z = 1
-          cockpit.castShadow = true
-          group.add(cockpit)
-
-          // Add engine effects
-          const engineGlow = new THREE.PointLight(0xff3366, 2, 3)
-          engineGlow.position.z = -2
-          group.add(engineGlow)
-
-          return group
-        }
-        
-        // ... [Similar enhancements for robot and satellite cases]
-        
-        default:
-          return new THREE.Mesh(
-            new THREE.BoxGeometry(1, 1, 1),
-            material
-          )
-      }
-    }
-
-    const model = createModel(modelType)
-    model.scale.set(scale, scale, scale)
-    model.position.set(position.x, position.y, position.z)
-    model.rotation.y = rotation
-    scene.add(model)
-
-    // Enhanced controls
+    // Setup controls
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
     controls.dampingFactor = 0.05
-    controls.enableZoom = true
-    controls.autoRotate = autoRotate
-    controls.autoRotateSpeed = isHovered ? 5 : 1
 
-    // Enhanced animation with more dynamic movement
-    let frame = 0
-    const animate = () => {
-      requestAnimationFrame(animate)
-      frame += 0.01
+    // Load model
+    const loader = new GLTFLoader()
+    const modelPath = modelPaths[modelType]
 
-      // More complex floating animation
-      model.position.y = position.y + Math.sin(frame) * 0.1
-      model.rotation.z = Math.sin(frame * 0.5) * 0.05
+    console.log('Loading model:', modelPath)
 
-      // Animate lights
-      if (enableEffects) {
-        pointLight1.position.x = Math.sin(frame) * 10
-        pointLight2.position.x = Math.cos(frame) * 10
+    if (!modelPath) {
+      const errorMsg = `Model type "${modelType}" is not valid.`
+      console.error(errorMsg)
+      setError(errorMsg)
+      setIsLoading(false)
+      return
+    }
+
+    console.log(`Loading model from path: ${modelPath}`)
+
+    loader.load(
+      modelPath,
+        (gltf) => {
+        console.log('Model loaded successfully:', gltf)
+        const loadedModel = gltf.scene
+        modelRef.current = loadedModel
+        
+        // Apply transformations
+        loadedModel.scale.set(scale, scale, scale)
+        loadedModel.position.set(position.x, position.y, position.z)
+        loadedModel.rotation.y = rotation
+
+        // Enable shadows on the model if effects are enabled
+        if (enableEffects) {
+          loadedModel.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true
+            child.receiveShadow = true
+          }
+          })
+        }
+
+        // Center model
+        const box = new THREE.Box3().setFromObject(loadedModel)
+        const center = box.getCenter(new THREE.Vector3())
+        const size = box.getSize(new THREE.Vector3())
+        
+        const maxDim = Math.max(size.x, size.y, size.z)
+        const fov = camera.fov * (Math.PI / 180)
+        const cameraDistance = maxDim / (2 * Math.tan(fov / 2))
+        
+        // Set initial zoomed in position (closer to the model)
+        camera.position.z = cameraDistance * 0.8
+        // Store the final camera position for smooth transition
+        targetCameraPositionRef.current = new THREE.Vector3(0, 0, cameraDistance * 1.2)
+        
+        controls.target.copy(center)
+        scene.add(loadedModel)
+        setIsLoading(false)
+
+        // Set up animation mixer if there are animations
+        if (gltf.animations.length > 0) {
+          const newMixer = new AnimationMixer(loadedModel)
+          gltf.animations.forEach((clip) => {
+          newMixer.clipAction(clip).play()
+          })
+          setMixer(newMixer)
+        }
+
+        // Start animation loop after model is loaded
+        function animate() {
+            requestAnimationFrame(animate)
+            
+            if (initialZoomRef.current && camera.position.z < targetCameraPositionRef.current.z) {
+            // Smooth zoom out
+            camera.position.z += (targetCameraPositionRef.current.z - camera.position.z) * 0.015
+            if (Math.abs(camera.position.z - targetCameraPositionRef.current.z) < 0.1) {
+              initialZoomRef.current = false
+            }
+            }
+
+            controls.update()
+            
+            if (mixer) {
+            mixer.update(0.016) // Update animations
+            }
+          
+          if (autoRotate && loadedModel) {
+          loadedModel.rotation.y += 0.005
+          }
+          
+          renderer.render(scene, camera)
+        }
+        animate()
+        },
+        (progress) => {
+        console.log(`Loading progress: ${(progress.loaded / progress.total * 100).toFixed(2)}%`)
+        },
+        (error: unknown) => {
+        const errorMsg = `Error loading model: ${error instanceof Error ? error.message : 'Unknown error'}`
+        console.error(errorMsg)
+        setError(errorMsg)
+        setIsLoading(false)
+        }
+    )
+
+    const handleResize = () => {
+      if (!containerRef.current || !rendererRef.current) return
+      
+      const width = containerRef.current.clientWidth
+      const height = containerRef.current.clientHeight
+      
+      camera.aspect = width / height
+      camera.updateProjectionMatrix()
+      renderer.setSize(width, height)
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    // Cleanup
+    return () => {
+      console.log('Cleaning up Three.js scene')
+      window.removeEventListener('resize', handleResize)
+      
+      if (modelRef.current) {
+        scene.remove(modelRef.current)
+        modelRef.current.traverse((object) => {
+          if (object instanceof THREE.Mesh) {
+            object.geometry.dispose()
+            if (object.material instanceof THREE.Material) {
+              object.material.dispose()
+            }
+          }
+        })
       }
 
-      controls.update()
-      renderer.render(scene, camera)
-    }
-
-    animate()
-
-    // Enhanced resize handler with debounce
-    let resizeTimeout: NodeJS.Timeout
-    const handleResize = () => {
-      clearTimeout(resizeTimeout)
-      resizeTimeout = setTimeout(() => {
-        if (!container) return
-        camera.aspect = container.clientWidth / container.clientHeight
-        camera.updateProjectionMatrix()
-        renderer.setSize(container.clientWidth, container.clientHeight)
-      }, 100)
-    }
-
-    window.addEventListener("resize", handleResize)
-
-    return () => {
-      window.removeEventListener("resize", handleResize)
+      renderer.dispose()
       container.removeChild(renderer.domElement)
     }
-  }, [modelType, scale, rotation, position, autoRotate, color, enableEffects, isHovered])
+  }, [modelType])
+
+  if (error) {
+    return (
+      <div ref={containerRef} className={className} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'red' }}>
+        Error: {error}
+      </div>
+    )
+  }
 
   return (
     <div
       ref={containerRef}
       className={className}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    />
+      style={{ width: '100%', height: '100%', position: 'relative' }}
+    >
+      {isLoading && (
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'white' }}>
+          Loading...
+        </div>
+      )}
+    </div>
   )
 }
