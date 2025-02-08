@@ -9,6 +9,7 @@ interface GlowButtonProps extends Omit<HTMLMotionProps<"button">, keyof ButtonPr
   glowColor?: string
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
   className?: string
+  children?: React.ReactNode
 }
 
 const GlowButton = React.forwardRef<HTMLButtonElement, GlowButtonProps>(
