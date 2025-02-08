@@ -3,16 +3,15 @@ import { Press_Start_2P, Space_Grotesk } from "next/font/google"
 import "./globals.css"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import { ThreeBackground } from "@/components/three-background"
-import { ParticleEffect } from "@/components/particle-effect"
-import { GradientBackground } from "@/components/gradient-background"
-import { Providers } from "./providers"
-import type React from "react"
-import { validateEnv } from '@/lib/env'
+import { ThemeProvider } from "@/components/theme-provider"
+import { BackgroundController } from "@/components/background-controller"
 import { Suspense } from "react"
 import { LoadingScreen } from "@/components/loading-screen"
+import { validateEnv } from '@/lib/env'
+import type React from "react"
 
 const pressStart = Press_Start_2P({
+
   subsets: ["latin"],
   weight: "400",
   variable: "--font-press-start",
@@ -39,20 +38,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${pressStart.variable} ${spaceGrotesk.variable} font-sans bg-black text-white`}>
-        <Providers>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+        >
           <Suspense fallback={<LoadingScreen />}>
-            <GradientBackground />
-            <ParticleEffect />
-            <ThreeBackground />
+            <BackgroundController />
             <div className="relative min-h-screen flex flex-col z-10">
               <Navbar />
               <main className="flex-grow">{children}</main>
               <Footer />
             </div>
           </Suspense>
-        </Providers>
+        </ThemeProvider>
       </body>
     </html>
   )
 }
+
 
