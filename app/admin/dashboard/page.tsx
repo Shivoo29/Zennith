@@ -1,5 +1,7 @@
 "use client"
 
+export const dynamic = 'force-dynamic'
+
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import { redirect } from "next/navigation"
@@ -30,9 +32,12 @@ export default function AdminDashboard() {
   const [registrations, setRegistrations] = useState<Registration[]>([])
   const [eventStats, setEventStats] = useState<EventStats[]>([])
 
-  // Redirect if not authenticated
-  if (!session) {
-    redirect("/admin/login")
+  if (status === 'loading') {
+    return <div>Loading...</div>
+  }
+
+  if (status === 'unauthenticated' || !session) {
+    redirect('/auth/signin')
   }
 
   // Simulated data - In a real app, this would fetch from your API
