@@ -10,8 +10,8 @@ import { ThreeModel } from "@/components/three-model"
 const events = [
   {
     id: 1,
-    title: "Startup Pitch Competition",
-    description: "Present your innovative ideas to top investors",
+    title: "Bulls Eye Bazaar",
+    description: "Online trading event",
     date: "Feb 10, 2025",
     time: "10:00 AM - 1:00 PM",
     venue: "Main Auditorium",
@@ -22,8 +22,8 @@ const events = [
   },
   {
     id: 2,
-    title: "Hackathon",
-    description: "24-hour coding challenge",
+    title: "Case Heist",
+    description: "Case Study Competition",
     date: "Feb 10-11, 2025",
     time: "2:00 PM - 2:00 PM",
     venue: "Innovation Lab",
@@ -34,8 +34,8 @@ const events = [
   },
   {
     id: 3,
-    title: "Business Case Study Competition",
-    description: "Solve real-world business challenges",
+    title: "Pitch craft",
+    description: "Pitching Competition",
     date: "Feb 11, 2025",
     time: "9:00 AM - 12:00 PM",
     venue: "Conference Hall",
@@ -43,6 +43,42 @@ const events = [
     details:
       "Analyze and present solutions for real business cases. Learn from industry experts and develop your strategic thinking.",
     prize: "₹50,000",
+  },
+  {
+    id: 4,
+    title: "Escape the Maitrix",
+    description: "Treasure Hunt",
+    date: "Feb 11, 2025",
+    time: "9:00 AM - 12:00 PM",
+    venue: "Conference Hall",
+    modelType: "satellite",
+    details:
+      "Analyze and present solutions for real business cases. Learn from industry experts and develop your strategic thinking.",
+    prize: "₹50,000",
+  },
+  {
+    id: 5,
+    title: "Expree Galerie",
+    description: "Art Gallery",
+    date: "Feb 11, 2025",
+    time: "9:00 AM - 12:00 PM",
+    venue: "Conference Hall",
+    modelType: "satellite",
+    details:
+      "Analyze and present solutions for real business cases. Learn from industry experts and develop your strategic thinking.",
+    prize: "₹50,000",
+  },
+  {
+    id: 6,
+    title: "Evolvex",
+    description: "Event by NSS",
+    date: "Feb 10, 2025",
+    time: "10:00 AM - 1:00 PM",
+    venue: "Main Auditorium",
+    modelType: "spaceship",
+    details:
+      "Get ready to pitch your startup idea to a panel of experienced investors and industry experts. Winners will receive mentorship and potential funding opportunities.",
+    prize: "₹1,00,000",
   },
 ]
 
