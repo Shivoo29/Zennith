@@ -16,8 +16,12 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
-.env*
+# environment variables
+.env
+.env*.local
+
+# but keep example file
+!.env.example
 
 # vercel
 .vercel
@@ -25,3 +29,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+public/models/diamond_hands.glb
+public/models/dji_fpv_by_sdc_-__high_performance_drone.glb
+public/models/low_poly_mccree.glb
+public/models/the_haunted_altar.glb
+public/models/vansmoney.glb

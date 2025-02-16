@@ -11,6 +11,9 @@ const nextConfig = {
 				hostname: '**',
 			},
 		],
+		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+		imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+		formats: ['image/webp'],
 	},
 	reactStrictMode: true,
 	swcMinify: true,
@@ -30,20 +33,18 @@ const nextConfig = {
 	assetPrefix: process.env.NODE_ENV === 'production' 
 		? 'https://zennith-esummit.vercel.app' 
 		: '',
-	// Configure webpack to handle GLB files
 	webpack: (config) => {
 		config.module.rules.push({
 			test: /\.(glb|gltf)$/,
-			use: {
-				loader: 'file-loader',
-				options: {
-					publicPath: '/_next/static/models',
-					outputPath: 'static/models',
-				},
-			},
-		});
-		return config;
+			type: 'asset/resource',
+			generator: {
+				filename: 'static/models/[name][ext]'
+			}
+		})
+		return config
 	},
+
+
 }
 
 module.exports = nextConfig

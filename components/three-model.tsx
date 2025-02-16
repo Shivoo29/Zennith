@@ -37,12 +37,12 @@ export function ThreeModel({
   const targetCameraPositionRef = useRef<THREE.Vector3>(new THREE.Vector3())
 
   const modelPaths = {
-    Bull: 'diamond_hands.glb',
-    hiest: 'vansmoney.glb',
-    craft: 'the_haunted_altar.glb',
-    matrix: 'low_poly_mccree.glb',
-    drone: 'dji_fpv_by_sdc_-__high_performance_drone.glb',
-    evolution: 'stylized_mushrooms.glb'
+    Bull: '/models/diamond_hands.glb',
+    hiest: '/models/vansmoney.glb',
+    craft: '/models/the_haunted_altar.glb',
+    matrix: '/models/low_poly_mccree.glb',
+    drone: '/models/dji_fpv_by_sdc_-__high_performance_drone.glb',
+    evolution: '/models/stylized_mushrooms.glb'  // Fixed the filename by removing (1)
   }
 
   useEffect(() => {
@@ -106,10 +106,15 @@ export function ThreeModel({
 
     loader.load(
       modelPath,
-        (gltf) => {
-        console.log('Model loaded successfully:', gltf)
-        const loadedModel = gltf.scene
-        modelRef.current = loadedModel
+      (gltf) => {
+      console.log('Model loaded successfully:', gltf)
+      const loadedModel = gltf.scene
+      if (!loadedModel) {
+        setError('Model loaded but scene is empty')
+        setIsLoading(false)
+        return
+      }
+      modelRef.current = loadedModel
         
         // Apply transformations
         loadedModel.scale.set(scale, scale, scale)
@@ -180,13 +185,17 @@ export function ThreeModel({
         animate()
         },
         (progress) => {
-        console.log(`Loading progress: ${(progress.loaded / progress.total * 100).toFixed(2)}%`)
+          const percentage = (progress.loaded / progress.total * 100)
+          console.log(`Loading progress: ${percentage.toFixed(2)}%`)
+          if (isNaN(percentage)) {
+          console.warn('Progress calculation resulted in NaN, possible missing or corrupt file')
+          }
         },
         (error: unknown) => {
-        const errorMsg = `Error loading model: ${error instanceof Error ? error.message : 'Unknown error'}`
-        console.error(errorMsg)
-        setError(errorMsg)
-        setIsLoading(false)
+          const errorMsg = `Error loading model: ${error instanceof Error ? error.message : 'Unknown error'}`
+          console.error('Model loading error:', error)
+          setError(errorMsg)
+          setIsLoading(false)
         }
     )
 

@@ -9,24 +9,162 @@ interface Sponsor {
   description: string
   tier: "platinum" | "gold" | "silver"
   website?: string
+  contact: {
+    name: string
+    role: string
+  }
 }
 
+
 const sponsors: Sponsor[] = [
+  // Platinum Sponsors (Major partners)
   {
-    name: "TechCorp",
-    logo: "/sponsors/techcorp.png",
-    description: "Leading technology solutions provider",
+    name: "UNSTOP",
+    logo: "/sponsors/unstop-logo.svg",
+    description: "Leading student engagement and opportunities platform",
     tier: "platinum",
-    website: "https://techcorp.com"
+    website: "https://unstop.com",
+    contact: {
+      name: "Vidushi",
+      role: "Point of Contact"
+    }
   },
   {
-    name: "InnovateX",
-    logo: "/sponsors/innovatex.png",
-    description: "Innovation and research leader",
+    name: "Jamboree Education",
+    logo: "/sponsors/jamboree.png",
+    description: "Premier test prep and education consulting",
     tier: "platinum",
-    website: "https://innovatex.com"
+    website: "https://www.jamboree.in",
+    contact: {
+      name: "Ruchir",
+      role: "Point of Contact"
+    }
   },
-  // Add more sponsors here
+  {
+    name: "Interview Buddy",
+    logo: "/sponsors/interview-buddy.png",
+    description: "Professional interview preparation platform",
+    tier: "platinum",
+    website: "https://interviewbuddy.in",
+    contact: {
+      name: "Harssh",
+      role: "Point of Contact"
+    }
+  },
+
+  // Gold Sponsors (Secondary major partners)
+  {
+    name: "MentorX",
+    logo: "/sponsors/mentorx.png",
+    description: "Mentorship and career guidance platform",
+    tier: "gold",
+    website: "https://mentorx.com",
+    contact: {
+      name: "Shivansh",
+      role: "Point of Contact"
+    }
+  },
+  {
+    name: "HoverRobotix",
+    logo: "/sponsors/hovorrobotix.png",
+    description: "Innovative robotics solutions",
+    tier: "gold",
+    website: "https://hoverrobotix.com",
+    contact: {
+      name: "Shivansh",
+      role: "Point of Contact"
+    }
+  },
+  {
+    name: "Stockedge",
+    logo: "/sponsors/stockedge.webp",
+    description: "Stock market learning and analysis platform",
+    tier: "gold",
+    website: "https://stockedge.com",
+    contact: {
+      name: "Sneha Dewan",
+      role: "Point of Contact"
+    }
+  },
+  {
+    name: "Belgium Waffle",
+    logo: "/sponsors/belgium-waffle.png",
+    description: "Premium waffle and dessert chain",
+    tier: "gold",
+    website: "https://belgiumwaffle.in",
+    contact: {
+      name: "Shivansh",
+      role: "Point of Contact"
+    }
+  },
+
+  // Silver Sponsors (Supporting partners)
+  {
+    name: "Stockgro",
+    logo: "/sponsors/stockgroBlack.webp",
+    description: "Stock market simulation platform",
+    tier: "silver",
+    website: "https://stockgro.club",
+    contact: {
+      name: "Ramit",
+      role: "Point of Contact"
+    }
+  },
+  {
+    name: "Mudgar",
+    logo: "/sponsors/mudgar.svg",
+    description: "Financial services and consulting",
+    tier: "silver",
+    website: "https://mudgar.com",
+    contact: {
+      name: "Vidushi",
+      role: "Point of Contact"
+    }
+  },
+  {
+    name: "Igmae",
+    logo: "/sponsors/igmae.jpg",
+    description: "Gaming and entertainment platform",
+    tier: "silver",
+    website: "https://igmae.in",
+    contact: {
+      name: "Saanvi",
+      role: "Point of Contact"
+    }
+  },
+  {
+    name: "DU Express",
+    logo: "/sponsors/du-express.webp",
+    description: "Student media and news platform",
+    tier: "silver",
+    website: "https://duexpress.in",
+    contact: {
+      name: "Ruchir",
+      role: "Point of Contact"
+    }
+  },
+  {
+    name: "Give my Certificate",
+    logo: "/sponsors/give-my-certificate.png",
+    description: "Digital certificate generation platform",
+    tier: "silver",
+    website: "https://givemycertificate.com",
+    contact: {
+      name: "Siddharth",
+      role: "Point of Contact"
+    }
+  },
+  {
+    name: "Headshot Energy Drinks",
+    logo: "/sponsors/headshot-enerdy-drinks.avif",
+    description: "Premium energy drinks brand",
+    tier: "silver",
+    website: "https://headshot.com",
+    contact: {
+      name: "Saanvi",
+      role: "Point of Contact"
+    }
+  }
 ]
 
 const containerVariants = {
@@ -103,8 +241,8 @@ export default function SponsorsPage() {
                       {sponsor.tier}
                     </span>
                   </div>
-                  <p className="text-gray-400">{sponsor.description}</p>
-                  {sponsor.website && (
+                    <p className="text-gray-400">{sponsor.description}</p>
+                    {sponsor.website && (
                     <a
                       href={sponsor.website}
                       target="_blank"
@@ -113,11 +251,17 @@ export default function SponsorsPage() {
                     >
                       Visit Website
                       <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                       </svg>
                     </a>
-                  )}
-                </div>
+                    )}
+                    
+                    <div className="flex items-center text-sm text-gray-400">
+                      <span className="font-medium">Contact:</span>
+                      <span className="ml-2">{sponsor.contact.name}</span>
+                    </div>
+
+                  </div>
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             </motion.div>
