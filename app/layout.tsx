@@ -9,9 +9,9 @@ import { Suspense } from "react"
 import { LoadingScreen } from "@/components/loading-screen"
 import { validateEnv } from '@/lib/env'
 import type React from "react"
+import { AnimatePresence } from "framer-motion"
 
 const pressStart = Press_Start_2P({
-
   subsets: ["latin"],
   weight: "400",
   variable: "--font-press-start",
@@ -43,18 +43,18 @@ export default function RootLayout({
           defaultTheme="dark"
           enableSystem={false}
         >
-          <Suspense fallback={<LoadingScreen />}>
-            <BackgroundController />
-            <div className="relative min-h-screen flex flex-col z-10">
-              <Navbar />
-              <main className="flex-grow">{children}</main>
-              <Footer />
-            </div>
-          </Suspense>
+          <AnimatePresence mode="wait">
+            <Suspense fallback={<LoadingScreen />}>
+              <BackgroundController />
+              <div className="relative min-h-screen flex flex-col z-10">
+                <Navbar />
+                <main className="flex-grow">{children}</main>
+                <Footer />
+              </div>
+            </Suspense>
+          </AnimatePresence>
         </ThemeProvider>
       </body>
     </html>
   )
 }
-
-

@@ -5,234 +5,195 @@ import * as THREE from "three"
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
 interface PageBackgroundProps {
-	type: 'about' | 'events' | 'sponsors' | 'register'
+  type: 'about' | 'events' | 'sponsors' | 'register'
 }
 
 export function PageBackground({ type }: PageBackgroundProps) {
-	const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-	useEffect(() => {
-		if (!containerRef.current) return
+  useEffect(() => {
+    if (!containerRef.current) return
 
-		const container = containerRef.current
-		const scene = new THREE.Scene()
-		const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-		
-		const renderer = new THREE.WebGLRenderer({ 
-			alpha: true,
-			antialias: true,
-		})
-		
-		renderer.setSize(window.innerWidth, window.innerHeight)
-		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-		container.appendChild(renderer.domElement)
+    const container = containerRef.current
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+    
+    const renderer = new THREE.WebGLRenderer({ 
+      alpha: true,
+      antialias: true,
+    })
+    
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    container.appendChild(renderer.domElement)
 
-		// Different background setups based on page type
-		switch (type) {
-			case 'about': {
-				// Cyberpunk grid background
-				scene.fog = new THREE.FogExp2(0x000000, 0.035)
-				const aboutGridHelper = new THREE.GridHelper(200, 50, 0x00fff9, 0x00fff9)
-				aboutGridHelper.position.y = -5
-				scene.add(aboutGridHelper)
-				break
-			}
+    // Set up space background
+    scene.fog = new THREE.FogExp2(0x0a001f, 0.0015)
+    renderer.setClearColor(0x0a001f, 1)
 
-			case 'events': {
-				// Particle system background
-				const eventsGeometry = new THREE.BufferGeometry()
-				const eventsParticleCount = 5000
-				const eventsPositions = new Float32Array(eventsParticleCount * 3)
-				
-				for (let i = 0; i < eventsParticleCount * 3; i++) {
-					eventsPositions[i] = (Math.random() - 0.5) * 100
-				}
-				
-				eventsGeometry.setAttribute('position', new THREE.BufferAttribute(eventsPositions, 3))
-				const eventsMaterial = new THREE.PointsMaterial({
-					color: 0xff2e88,
-					size: 0.1,
-				})
-				const eventsParticles = new THREE.Points(eventsGeometry, eventsMaterial)
-				scene.add(eventsParticles)
-				break
-			}
+    // Create stars
+    const starCount = 10000
+    const starGeometry = new THREE.BufferGeometry()
+    const starPositions = new Float32Array(starCount * 3)
+    const starSizes = new Float32Array(starCount)
+    const starColors = new Float32Array(starCount * 3)
 
-			case 'sponsors': {
-				// Create cyberpunk background
-				scene.fog = new THREE.FogExp2(0x0a001f, 0.0015)
-				renderer.setClearColor(0x0a001f, 1)
+    for (let i = 0; i < starCount; i++) {
+      // Position stars in a sphere around the camera
+      const radius = Math.random() * 100 + 50
+      const theta = Math.random() * Math.PI * 2
+      const phi = Math.random() * Math.PI
+      
+      starPositions[i * 3] = radius * Math.sin(phi) * Math.cos(theta)
+      starPositions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta)
+      starPositions[i * 3 + 2] = radius * Math.cos(phi)
+      
+      // Vary star sizes
+      starSizes[i] = Math.random() * 2
 
-				// Create particle systems for cyber space effect
-				const sponsorsParticleCount = 5000
-				const sponsorsGeometry = new THREE.BufferGeometry()
-				const sponsorsPositions = new Float32Array(sponsorsParticleCount * 3)
-				const sponsorsSizes = new Float32Array(sponsorsParticleCount)
-				const sponsorsColors = new Float32Array(sponsorsParticleCount * 3)
+      // Create color palette of blue and purple stars
+      const colorChoice = Math.random()
+      if (colorChoice < 0.4) {
+        // Neon blue
+        starColors[i * 3] = 0
+        starColors[i * 3 + 1] = 0.8
+        starColors[i * 3 + 2] = 1
+      } else if (colorChoice < 0.7) {
+        // Purple
+        starColors[i * 3] = 0.5
+        starColors[i * 3 + 1] = 0
+        starColors[i * 3 + 2] = 1
+      } else {
+        // White with slight blue tint
+        starColors[i * 3] = 0.8
+        starColors[i * 3 + 1] = 0.9
+        starColors[i * 3 + 2] = 1
+      }
+    }
 
-				for (let i = 0; i < sponsorsParticleCount; i++) {
-					// Position
-					sponsorsPositions[i * 3] = (Math.random() - 0.5) * 100
-					sponsorsPositions[i * 3 + 1] = (Math.random() - 0.5) * 100
-					sponsorsPositions[i * 3 + 2] = (Math.random() - 0.5) * 100
-					
-					// Size
-					sponsorsSizes[i] = Math.random() * 2
-					
-					// Color - Create cyberpunk color palette
-					const colorChoice = Math.random()
-					if (colorChoice < 0.3) {
-						// Neon pink
-						sponsorsColors[i * 3] = 1
-						sponsorsColors[i * 3 + 1] = 0.2
-						sponsorsColors[i * 3 + 2] = 0.5
-					} else if (colorChoice < 0.6) {
-						// Cyan
-						sponsorsColors[i * 3] = 0
-						sponsorsColors[i * 3 + 1] = 1
-						sponsorsColors[i * 3 + 2] = 0.9
-					} else {
-						// Purple
-						sponsorsColors[i * 3] = 0.5
-						sponsorsColors[i * 3 + 1] = 0
-						sponsorsColors[i * 3 + 2] = 1
-					}
-				}
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3))
+    starGeometry.setAttribute('size', new THREE.BufferAttribute(starSizes, 1))
+    starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3))
 
-				sponsorsGeometry.setAttribute('position', new THREE.BufferAttribute(sponsorsPositions, 3))
-				sponsorsGeometry.setAttribute('size', new THREE.BufferAttribute(sponsorsSizes, 1))
-				sponsorsGeometry.setAttribute('color', new THREE.BufferAttribute(sponsorsColors, 3))
+    // Create shader material for stars
+    const starMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        time: { value: 0 },
+        pixelRatio: { value: renderer.getPixelRatio() }
+      },
+      vertexShader: `
+        attribute float size;
+        attribute vec3 color;
+        varying vec3 vColor;
+        uniform float time;
+        
+        void main() {
+          vColor = color;
+          vec3 pos = position;
+          
+          // Add subtle movement to stars
+          pos.x += sin(time * 0.1 + position.z * 0.02) * 0.5;
+          pos.y += cos(time * 0.1 + position.x * 0.02) * 0.5;
+          
+          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+          gl_Position = projectionMatrix * mvPosition;
+          gl_PointSize = size * (300.0 / length(mvPosition.xyz)) * pixelRatio;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+        
+        void main() {
+          vec2 xy = gl_PointCoord.xy - vec2(0.5);
+          float ll = length(xy);
+          if (ll > 0.5) discard;
+          
+          float alpha = 0.5 - ll;
+          gl_FragColor = vec4(vColor, alpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    })
 
-				const sponsorsMaterial = new THREE.ShaderMaterial({
-					uniforms: {
-						time: { value: 0 },
-						pixelRatio: { value: renderer.getPixelRatio() }
-					},
-					vertexShader: `
-						attribute float size;
-						attribute vec3 color;
-						varying vec3 vColor;
-						uniform float time;
-						
-						void main() {
-							vColor = color;
-							vec3 pos = position;
-							pos.y += sin(time * 0.5 + position.x * 0.5) * 0.5;
-							pos.x += cos(time * 0.5 + position.y * 0.5) * 0.5;
-							
-							vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-							gl_Position = projectionMatrix * mvPosition;
-							gl_PointSize = size * (300.0 / length(mvPosition.xyz)) * pixelRatio;
-						}
-					`,
-					fragmentShader: `
-						varying vec3 vColor;
-						
-						void main() {
-							vec2 xy = gl_PointCoord.xy - vec2(0.5);
-							float ll = length(xy);
-							if (ll > 0.5) discard;
-							
-							float alpha = 0.5 - ll;
-							gl_FragColor = vec4(vColor, alpha);
-						}
-					`,
-					transparent: true,
-					depthWrite: false,
-					blending: THREE.AdditiveBlending
-				})
+    const stars = new THREE.Points(starGeometry, starMaterial)
+    scene.add(stars)
 
-				const sponsorsParticles = new THREE.Points(sponsorsGeometry, sponsorsMaterial)
-				scene.add(sponsorsParticles)
+    // Create planets
+    const createPlanet = (radius: number, color: number, position: THREE.Vector3) => {
+      const planetGeometry = new THREE.SphereGeometry(radius)
+      const planetMaterial = new THREE.MeshPhongMaterial({
+        color: color,
+        emissive: color,
+        emissiveIntensity: 0.2,
+        shininess: 15
+      })
+      const planet = new THREE.Mesh(planetGeometry, planetMaterial)
+      planet.position.copy(position)
+      return planet
+    }
 
-				// Create grid for cyberpunk effect
-				const sponsorsGridHelper = new THREE.GridHelper(200, 50, 0xff1493, 0x00ffff)
-				sponsorsGridHelper.position.y = -30
-				scene.add(sponsorsGridHelper)
+    // Add some planets
+    const planet1 = createPlanet(5, 0x4169e1, new THREE.Vector3(30, 10, -40))
+    const planet2 = createPlanet(3, 0x9400d3, new THREE.Vector3(-40, -5, -30))
+    const planet3 = createPlanet(4, 0x4b0082, new THREE.Vector3(20, -15, -50))
+    
+    scene.add(planet1, planet2, planet3)
 
-				// Add volumetric light effect
-				const spotLight = new THREE.SpotLight(0xff1493, 1)
-				spotLight.position.set(-50, 50, -50)
-				spotLight.angle = 0.3
-				scene.add(spotLight)
+    // Add ambient light for basic illumination
+    const ambientLight = new THREE.AmbientLight(0x404040)
+    scene.add(ambientLight)
 
-				// Setup camera and controls first
-				camera.position.z = 15
-				const controls = new OrbitControls(camera, renderer.domElement)
-				controls.enableDamping = true
-				controls.dampingFactor = 0.05
-				controls.enableZoom = false
-				controls.autoRotate = true
+    // Add point lights for planet glow
+    const light1 = new THREE.PointLight(0x4169e1, 2, 50)
+    const light2 = new THREE.PointLight(0x9400d3, 2, 50)
+    light1.position.set(30, 10, -40)
+    light2.position.set(-40, -5, -30)
+    scene.add(light1, light2)
 
-				// Animation function specific to sponsors
-				function animateSponsors() {
-					sponsorsMaterial.uniforms.time.value += 0.01
-					sponsorsParticles.rotation.y += 0.0005
-					sponsorsParticles.rotation.x += 0.0002
-					spotLight.position.x = Math.sin(sponsorsMaterial.uniforms.time.value * 0.5) * 50
-					sponsorsGridHelper.material.opacity = 0.5 + Math.sin(sponsorsMaterial.uniforms.time.value) * 0.2
-				}
+    // Set up camera and controls
+    camera.position.z = 50
+    const controls = new OrbitControls(camera, renderer.domElement)
+    controls.enableDamping = true
+    controls.dampingFactor = 0.05
+    controls.enableZoom = false
+    controls.autoRotate = true
+    controls.autoRotateSpeed = 0.5
 
-				// Now define and start animation after controls are initialized
-				function animate() {
-					requestAnimationFrame(animate)
-					animateSponsors()
-					controls.update()
-					renderer.render(scene, camera)
-				}
-				animate()
-				break
-			}
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate)
+      starMaterial.uniforms.time.value += 0.01
+      stars.rotation.y += 0.0002
+      planet1.rotation.y += 0.001
+      planet2.rotation.y += 0.002
+      planet3.rotation.y += 0.0015
+      controls.update()
+      renderer.render(scene, camera)
+    }
+    animate()
 
-			case 'register':
-				// DNA helix background
-				const helixGroup = new THREE.Group()
-				const sphereGeometry = new THREE.SphereGeometry(0.2)
-				const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x00fff9 })
-				
-				for (let i = 0; i < 50; i++) {
-					const sphere1 = new THREE.Mesh(sphereGeometry, sphereMaterial)
-					const sphere2 = new THREE.Mesh(sphereGeometry, sphereMaterial)
-					const t = i * 0.3
-					sphere1.position.set(
-						Math.cos(t) * 3,
-						t - 10,
-						Math.sin(t) * 3
-					)
-					sphere2.position.set(
-						Math.cos(t + Math.PI) * 3,
-						t - 10,
-						Math.sin(t + Math.PI) * 3
-					)
-					helixGroup.add(sphere1, sphere2)
-				}
-				scene.add(helixGroup)
-				break
-		}
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight
+      camera.updateProjectionMatrix()
+      renderer.setSize(window.innerWidth, window.innerHeight)
+    }
 
+    window.addEventListener('resize', handleResize)
 
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      renderer.dispose()
+      container.removeChild(renderer.domElement)
+    }
+  }, [type])
 
-
-		const handleResize = () => {
-			camera.aspect = window.innerWidth / window.innerHeight
-			camera.updateProjectionMatrix()
-			renderer.setSize(window.innerWidth, window.innerHeight)
-		}
-
-		window.addEventListener('resize', handleResize)
-
-		return () => {
-			window.removeEventListener('resize', handleResize)
-			renderer.dispose()
-			container.removeChild(renderer.domElement)
-		}
-	}, [type])
-
-	return (
-		<div
-			ref={containerRef}
-			className="fixed inset-0 pointer-events-none"
-			style={{ zIndex: -1 }}
-		/>
-	)
+  return (
+    <div
+      ref={containerRef}
+      className="fixed inset-0 pointer-events-none"
+      style={{ zIndex: -1 }}
+    />
+  )
 }
