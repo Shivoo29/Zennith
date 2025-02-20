@@ -18,6 +18,35 @@ const features = [
       title: "World-Class Keynote Speakers",
       content: `Experience inspiring talks from industry pioneers and thought leaders who are shaping the future of technology and entrepreneurship. Our carefully curated lineup of speakers will share their insights, experiences, and vision for the future.`,
       animation: "animate-float",
+      images: [
+        "/speakers/Dr.MunishJindal.jpeg",
+        "/speakers/Dr.NancyJ.jpeg",
+        "/speakers/JhalakGupta.jpeg",
+        "/speakers/Shrey.jpeg",  // Updated to match exact file name
+        "/speakers/SanyaDuggal.jpeg"
+      ],
+      speakers: [
+        {
+          name: "Dr. Munish Jindal",
+          title: "Founder and CEO - HoverRobotix\nFounding President - MENTORx"
+        },
+        {
+          name: "Dr. Nancy Juneja",
+          title: "Founder & Director - RevUp\nCo-founder & CEO - MENTORx"
+        },
+        {
+          name: "Jhalak Gupta",
+          title: "Co-Founder @Skillarena.in | Helping Job Seekers Find Their Dream Job"
+        },
+        {
+          name: "Shrey Tyagi",
+          title: "Founder & CEO - Skillarena"
+        },
+        {
+          name: "Sanya Duggal",
+          title: "Partner Go-to-Market & Strategy Manager | Microsoft"
+        }
+      ]
     },
   },
   {
@@ -182,14 +211,31 @@ export default function Home() {
         title={selectedFeature?.details.title || ""}
       >
         <motion.div className="relative" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <motion.div
-            className={`absolute -top-12 -right-12 w-24 h-24 text-zenith-purple opacity-20 ${selectedFeature?.details.animation}`}
-            initial={{ rotate: 0 }}
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-          >
-            {selectedFeature?.icon && <selectedFeature.icon className="w-full h-full" />}
-          </motion.div>
+          {selectedFeature?.title === "Keynote Speakers" && selectedFeature.details.images && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              {selectedFeature.details.images.map((image, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="relative aspect-square">
+                    <Image
+                      src={image}
+                      alt={`Speaker ${index + 1}`}
+                      fill
+                      className="rounded-lg object-cover"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <h4 className="text-lg font-semibold text-gray-200">
+                      {selectedFeature?.details?.speakers?.[index]?.name || "Unknown Speaker"}
+                    </h4>
+                    <p className="text-sm text-gray-400 mt-1">
+                      {selectedFeature?.details?.speakers?.[index]?.title || "No title available"}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          
           <p className="text-gray-300 leading-relaxed">{selectedFeature?.details.content}</p>
           <GlowButton className="mt-6" onClick={() => setSelectedFeature(null)}>
             Close
