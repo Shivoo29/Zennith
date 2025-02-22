@@ -64,25 +64,25 @@ export default function About() {
               {[
                 {
                   time: "10:00 AM",
-                  date: "Feb 10, 2025",
+                  date: "Mar 27, 2025",
                   title: "Opening Ceremony",
                   description: "Kickoff with keynote speakers and inaugural address",
                 },
                 {
                   time: "2:00 PM",
-                  date: "Feb 10, 2025",
+                  date: "Mar 27, 2025",
                   title: "Workshop Sessions",
                   description: "Interactive workshops on emerging technologies",
                 },
                 {
                   time: "10:00 AM",
-                  date: "Feb 11, 2025",
+                  date: "Mar 28, 2025",
                   title: "Panel Discussions",
                   description: "Industry experts share their insights",
                 },
                 {
                   time: "4:00 PM",
-                  date: "Feb 11, 2025",
+                  date: "Mar 28, 2025",
                   title: "Closing Ceremony",
                   description: "Awards presentation and networking session",
                 },
